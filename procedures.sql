@@ -19,6 +19,7 @@ delimiter $$
 create procedure manageconcert (IN artist_ID_in INT, IN concert_date_in DATE, IN action_type_in CHAR(1))
 begin
   declare scheduled_cnt int;
+  declare msg_out varchar(100);
 
 -- check scheduled concerts
   select count(*) into scheduled_count from concert
@@ -34,6 +35,7 @@ begin
         set MESSAGE_TEXT = 'Concert must be scheduled at least 5 days in advance';
       else
         insert into Concert (ArtistID, concert_date) values (artist_ID_in, concert_date_in);
+        set msg_out = 'Concert scheduled.';
       end if;
 
     when 'c' then
@@ -43,6 +45,7 @@ begin
       else 
         update concert set ConcertStatus 'Cancelled'
         where ArtistID = artist_ID_in AND concert_date = concert_date_in AND ConcertStatus = 'Scheduled';
+        set msg_out = 'Concert cancelled.';
       end if;
     
     when 'a' then
@@ -51,4 +54,13 @@ begin
         set MESSAGE_TEXT = 'Artist has already 3 scheduled concerts';
       else 
         update concert set ConcertStatus = 'Scheduled'
-        where ArtistID 
+        where ArtistID = artist_ID_in AND concert_date = concert_date_in AND ConcertStatus = 'Cancelled';
+        set msg_out = 'Concert reactivated.';
+      end if;
+   end case;
+
+   select msg_out as message;
+
+end $$
+
+delimiter ;
