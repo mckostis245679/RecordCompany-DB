@@ -1,63 +1,54 @@
+-- 3.1.3.1 calculate venue score
+
+delimiter $$
+
+create procedure CalcVenueScore (IN venueID, OUT score int)
+begin
+  select (Capacity / 1000) + (NumofConcerts / 100) * 3 + (OperationYears * 2) into score
+  from venue 
+  where VenueID = venueID;
+end $$
+
+delimiter ;
 
 
+-- 3.1.3.2 concert management
 
-DELIMITER $
+delimiter $$
 
-CREATE PROCEDURE HasCollaboration(
-    IN pID INT(11),
-    IN cID INT(11),
-    OUT pIsActive INT
-)
-BEGIN
-    DECLARE existsflag INT;
-    DECLARE pdate DATE;
+create procedure manageconcert (IN artist_ID_in INT, IN concert_date_in DATE, IN action_type_in CHAR(1))
+begin
+  declare scheduled_cnt int;
 
-    SELECT COUNT(*),MAX(pc.ToDate)
-    INTO existsflag, pdate
-    FROM producercompany pc
-    WHERE pc.ProducerID = pID AND pc.RecordCompanyID = cID;
+-- check scheduled concerts
+  select count(*) into scheduled_count from concert
+  where ArtistID = artist_ID_in and ConcertStatus = 'Scheduled';
 
-    IF ((pdate IS NULL OR CURDATE() < pdate )AND  existsflag>0) THEN
-        SET pIsActive = 1;
-    ELSE 
-        SET pIsActive = 0;
-    END IF;
-END $
+  case action_type
+    when 'i' then
+      if scheduled_cnt >= 3 then
+        SIGNAL SQLSTATE '45000'
+        set MESSAGE_TEXT = 'Artist has already 3 scheduled concerts';
+      elseif datediff(concert_date_in, curdate()) < 5 then
+        SIGNAL SQLSTATE '45000'
+        set MESSAGE_TEXT = 'Concert must be scheduled at least 5 days in advance';
+      else
+        insert into Concert (ArtistID, concert_date) values (artist_ID_in, concert_date_in);
+      end if;
 
-DELIMITER ;
-
-DELIMITER $
-
-CREATE TRIGGER CheckCollaboration
-BEFORE INSERT ON producercompany
-FOR EACH ROW
-BEGIN
-DECLARE res INT;
-CALL HasCollaboration(New.ProducerID,New.RecordCompanyID,res);
-IF res=0 THEN  
-    SET NEW.FromDate = CURDATE();
-ELSE 
-    SIGNAL SQLSTATE VALUE '45000'
-    SET MESSAGE_TEXT = 'Invalid insertion!!Producer company and record company already collaborating ';
-END IF;
-END $
-
-DELIMITER ;
-
-
-INSERT INTO producercompany (ProducerID, RecordCompanyID, FromDate, ToDate) VALUES
-(1, 2, '2000-01-01', '2025-12-31');
-
-INSERT INTO producercompany (ProducerID, RecordCompanyID, FromDate, ToDate) VALUES
-(4, 5, '2000-01-01',NULL);
-
-INSERT INTO producercompany (ProducerID, RecordCompanyID, FromDate, ToDate) VALUES
-(2, 4, '2010-01-01', '2027-12-31');
-
-INSERT INTO producercompany (ProducerID, RecordCompanyID, FromDate, ToDate) VALUES(1, 4, '2020-01-01', '2027-12-31');
-
-DROP PROCEDURE HasCollaboration;
-DROP TRIGGER CheckCollaboration;
-
-CALL HasCollaboration(1,2,@res);
-SELECT @res;
+    when 'c' then
+      if datediff(concert_date_in, curdate()) < 3 then
+        SIGNAL SQLSTATE '45000'
+        set MESSAGE_TEXT = 'Cannot cancel concert 3 days before';
+      else 
+        update concert set ConcertStatus 'Cancelled'
+        where ArtistID = artist_ID_in AND concert_date = concert_date_in AND ConcertStatus = 'Scheduled';
+      end if;
+    
+    when 'a' then
+      if scheduled_cnt >= 3 then
+        SIGNAL SQLSTATE '45000'
+        set MESSAGE_TEXT = 'Artist has already 3 scheduled concerts';
+      else 
+        update concert set ConcertStatus = 'Scheduled'
+        where ArtistID 

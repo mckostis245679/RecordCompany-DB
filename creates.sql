@@ -1,147 +1,68 @@
- Create database recordlabel;
-use recordlabel;
+CREATE TABLE concert (
+    ConcertID int(11) AUTO_INCREMENT PRIMARY KEY,
+    ConcertStatus ENUM('Scheduled', 'Completed', 'Canceled') NOT NULL,   
+    ConcertDate date,
+    required_capacity int not null,
+    ArtistID int(11) not null,
+    VenueID int(11) not null,
 
-
-#artst,recordcompany,genre,producer,producercoany,artistcompany,band,person,bandmember, album,  track, albumrelease
-
-CREATE TABLE artist(
-  ArtistID INT(11) NOT NULL AUTO_INCREMENT,
-  ArtistType   ENUM ('PERSON','BAND','ORCHESTRA','CHOIR','VIRTUAL','OTHER') NOT NULL,
-  PRIMARY KEY(ArtistID)
+    CONSTRAINT HASARTIST FOREIGN KEY (ArtistID) REFERENCES artist(ArtistID)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT HASVENUE FOREIGN KEY (VenueID) REFERENCES venue(VenueID) 
+    ON UPDATE CASCADE ON DELETE CASCADE
 ) engine=InnoDB;
 
-CREATE TABLE recordcompany(
-  CompanyID INT(11) NOT NULL AUTO_INCREMENT,
-  CompanyName VARCHAR(80) DEFAULT 'unknown' NOT NULL,
-  Address VARCHAR(150) DEFAULT 'unknown' NOT NULL,
-  Phone varchar(20),
-  Email varchar(40),
-  StartDate date,
-  EndDate date,
-  PRIMARY KEY(CompanyID)
-) engine=InnoDB;
+create table venue (
+    VenueID int(11) AUTO_INCREMENT PRIMARY KEY,
+    VenueName varchar(100) not null,
+    Venue_Location varchar(150) not null,
+    Opening_Date date not null,
+    Capacity int not null,
+    NumofConcerts int default 0,
+    OperationYears int default 0,
+);
 
-CREATE TABLE genre(
-  GenreID INT(11) NOT NULL AUTO_INCREMENT,
-  GenreName VARCHAR(30) DEFAULT 'unknown' NOT NULL,
-  PRIMARY KEY(GenreID)
-) engine=InnoDB;
-
-
-CREATE TABLE producer(
-  ProducerID INT(11) NOT NULL AUTO_INCREMENT,
-  FirstName VARCHAR(50) DEFAULT 'unknown' NOT NULL,
-  LastName VARCHAR(80) DEFAULT 'unknown' NOT NULL,
-  NumofProdAlbums int(11),
-  PRIMARY KEY(ProducerID)
-) engine=InnoDB;
-
-
-CREATE TABLE producercompany(
-  ProducerID INT(11) NOT NULL AUTO_INCREMENT,
-  RecordCompanyID INT(11) NOT NULL ,
-  FromDate date NOT NULL,
-  ToDate date,
-  PRIMARY KEY(ProducerID,RecordCompanyID,FromDate),
-  CONSTRAINT RECORD FOREIGN KEY (RecordCompanyID) REFERENCES recordcompany(CompanyID) 
-  ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT PRODUCER FOREIGN KEY (ProducerID) REFERENCES producer(ProducerID) 
-  ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
-
-
-CREATE TABLE artistcompany(
-  ArtistID INT(11) NOT NULL AUTO_INCREMENT,
-  CompanyID INT(11) NOT NULL ,
-  FromDate date NOT NULL,
-  ToDate date,
-  PRIMARY KEY(ArtistID,CompanyID,FromDate),
-  CONSTRAINT INRECORD FOREIGN KEY (CompanyID) REFERENCES recordcompany(CompanyID) 
-  ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT WORKS FOREIGN KEY (ArtistID) REFERENCES artist(ArtistID) 
-  ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
-
-CREATE TABLE band(
-  BandID INT(11) NOT NULL AUTO_INCREMENT,
-  BandName VARCHAR(50) DEFAULT 'unknown' NOT NULL,
-  FormationDate date ,
-  DisbandDate date ,
-  ArtistID INT(11) NOT NULL,
-  PRIMARY KEY(BandID),
-  CONSTRAINT ISARTIST FOREIGN KEY (ArtistID) REFERENCES artist(ArtistID) 
-  ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
-
-CREATE TABLE person(
-  Person_id INT(11) NOT NULL AUTO_INCREMENT,
-  FirstName VARCHAR(50) DEFAULT 'unknown' NOT NULL,
-  LastName VARCHAR(80) DEFAULT 'unknown' NOT NULL,
-  Birthdate date,
-  Country varchar(30),
-  Alias varchar(30),
-  isSoloArtist tinyint(4),
-  ArtistID int(11),
-  PRIMARY KEY(Person_id),
-  CONSTRAINT PERSONARTIST FOREIGN KEY (ArtistID) REFERENCES artist(ArtistID) 
-  ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
-
-
-CREATE TABLE bandmember(
-   BandID INT(11) NOT NULL AUTO_INCREMENT,
-   Person_id INT(11) NOT NULL,
-  FromDate date NOT NULL,
-  ToDate date,
-  PRIMARY KEY(BandID,Person_id,FromDate),
-  CONSTRAINT BANDPERSON FOREIGN KEY (Person_id) REFERENCES person(Person_id) 
-  ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT BANDBAND FOREIGN KEY (BandID) REFERENCES band(BandID) 
-  ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
+create table ConcertHistory (
+    history_id int primary key AUTO_INCREMENT,
+    concert_id int not null,
+    artist_name varchar(50) not null,
+    venue_name varchar(100) not null,
+    ticket_count int,
+    concert_date date
+);
 
 
 
-CREATE TABLE album(
-  AlbumID INT(11) NOT NULL AUTO_INCREMENT,
-   ArtistID INT(11) NOT NULL,
-   GenreID INT(11) NOT NULL,
-   CompanyID INT(11) NOT NULL ,
-   ProducerID INT(11) NOT NULL ,
-  Title varchar(100) DEFAULT 'unknown' NOT NULL,
-  PRIMARY KEY(AlbumID),
-  CONSTRAINT ALBUMARTIST FOREIGN KEY (ArtistID) REFERENCES artist(ArtistID) 
-  ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT ALBUMCOMPANY FOREIGN KEY (CompanyID) REFERENCES recordcompany(CompanyID) 
-  ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT ALBUMPRODUCER FOREIGN KEY (ProducerID) REFERENCES producer(ProducerID) 
-  ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT ABLUMGENRE FOREIGN KEY (GenreID) REFERENCES genre(GenreID) 
-  ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
+CREATE TABLE DBA (
+    username varchar(100) not null unique,
+    start_date date not null,
+    end_date date ,
+    PRIMARY KEY(username)
+);
+
+CREATE TABLE log (
+    log_id INT AUTO_INCREMENT NOT NULL,
+    table_name VARCHAR(50) NOT NULL,
+    action_type ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+    action_time DATETIME NOT NULL, 
+    username VARCHAR(100) NOT NULL
+     PRIMARY KEY(log_id),
+     CONSTRAINT HASUSER FOREIGN KEY (username) REFERENCES DBA(username) 
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+ Για τους Διαχειριστές Βάσης Δεδομένων (DBA) τηρείται
+η ημερομηνία που ανέλαβαν το ρόλο (start_date), η οποία δεν μπορεί να
+είναι null. Επίσης υπάρχει end_date ημερομηνία για όσους DBA έχουν φύγει
+από τη θέση. Μπορεί να υπάρχουν περισσότεροι από ένας Διαχειριστές
+Βάσης Δεδομένων την ίδια χρονική περίοδο. Οι ενέργειες των Διαχειριστών
+Βάσης Δεδομένων καταγράφοντα σε έναν πίνακα log όπως περιγράφεται
+στο Ερώτημα 3.1.4.1.
+
+Trigger που θα ενημερώνουν το σχετικό πίνακα καταγραφής ενεργειών
+(log) για κάθε ενέργεια εισαγωγής, ενημέρωσης ή διαγραφής στους πίνακες
+person, band, album, concert, venue με την ημερομηνία και ώρα και το
+username του DBA που την εκτέλεσε.
 
 
-CREATE TABLE track(
-  TrackID INT(11) NOT NULL AUTO_INCREMENT,
-   AlbumID INT(11) NOT NULL,
-   TrackLength time,
-   TrackNo int(11),
-   Lyrics text,
-  Title varchar(100) DEFAULT 'unknown' NOT NULL,
-  PRIMARY KEY(TrackID),
-  CONSTRAINT TRACKALBUM FOREIGN KEY (AlbumID) REFERENCES album(AlbumID) 
-  ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
-
-
-CREATE TABLE albumrelease(
-  ReleaseID INT(11) NOT NULL AUTO_INCREMENT,
-  AlbumID INT(11) NOT NULL,
-  ReleaseDate date NOT NULL,
-  ReleaseType   ENUM ('LP','CD','MP3') NOT NULL,
-  ReleaseStatus   ENUM ('OFFICIAL','PROMOTION','BOOTLEG','WITHDRAWN','CANCELED') NOT NULL,
-  Packaging   ENUM ('BOOK','CARDBOARD SLEEVE','DIGIPAK','JEWEL CASE','NA') NOT NULL,
-  PRIMARY KEY(ReleaseID),
-  CONSTRAINT ALBUMALBUM FOREIGN KEY (AlbumID) REFERENCES album(AlbumID) 
-  ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
+USER()
