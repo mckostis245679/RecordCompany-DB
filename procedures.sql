@@ -64,3 +64,25 @@ begin
 end $$
 
 delimiter ;
+
+-- 3.1.3.3 Find venue
+delimiter $$
+
+create procedure FindVenue (IN concert_id_in INT, IN req_capacity_in INT, OUT selected_venue_id INT, OUT selected_capacity INT)
+begin
+  declare concert_status varchar(20);
+
+  select ConcertStatus into concert_status from Concert
+  where ConcertID = concert_id_in;
+
+  if concert_status = 'Cancelled' OR concert_status is null then
+    set selected_venue_id = NULL;
+    set selected_capacity = 0;
+  else
+    select venueID, Capacity into selected_venue_id, selected_capacity from venue
+    where Capacity >= (1.1 * req_capacity_in) AND VenueID NOT IN (select venueID from Concert where ConcertStatus = 'Scheduled')
+    order by rating DESC limit 1;
+  end if;
+end $$
+
+delimiter ;

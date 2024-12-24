@@ -15,11 +15,15 @@ CREATE TABLE concert (
 create table venue (
     VenueID int(11) AUTO_INCREMENT PRIMARY KEY,
     VenueName varchar(100) not null,
-    Venue_Location varchar(150) not null,
+    Venue_Location varchar(200) not null,
     Opening_Date date not null,
     Capacity int not null,
     NumofConcerts int default 0,
     OperationYears int default 0,
+
+    rating decimal(4,2) generated always as (
+        (Capacity / 1000) + (NumofConcerts / 100) * 3 + (OperationYears * 2)
+    ) virtual
 );
 
 create table ConcertHistory (
