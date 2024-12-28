@@ -86,3 +86,34 @@ begin
 end $$
 
 delimiter ;
+
+
+-- INDEXES for procedure optimization
+
+create index concert_status_idx on Concert(ConcertStatus);
+create index concert_date_idx on Concert(ConcertDate);
+create index concert_venue_capacity_idx on venue(Capacity);
+create index concert_history_tickets_idx on ConcertHistory(ticket_count);  
+create index concert_history_venue_idx on ConcertHistory(venue_name);
+
+-- 3.1.3.4a Find concerts by tickets sold range
+delimiter $$
+
+create procedure Find_Concerts_byTickets(IN min INT, IN max INT)
+begin
+  select distinct artist_name from ConcertHistory
+  where ticket_count between min and max;
+end $$
+
+delimiter ;
+
+-- 3.1.3.4b find concert dates by venue name
+delimiter $$
+
+create procedure Find_COncert_byVenue(IN venue_name_in varchar(100))
+begin
+  select concert_date from ConcertHistory
+  where venue_name = venue_name_in order by concert_date DESC;
+end $$
+
+delimiter ;
