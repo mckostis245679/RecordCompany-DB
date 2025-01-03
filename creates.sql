@@ -1,3 +1,16 @@
+create table venue
+(
+    VenueID        int auto_increment
+        primary key,
+    VenueName      varchar(100)  not null,
+    Venue_Location varchar(200)  not null,
+    Opening_Date   date          not null,
+    Capacity       int           not null,
+    NumofConcerts  int default 0 null,
+    OperationYears int default 0 null,
+    rating         decimal(4, 2) as ((((`Capacity` / 1000) + ((`NumofConcerts` / 100) * 3)) + (`OperationYears` * 2)))
+);
+
 CREATE TABLE concert (
     ConcertID int(11) AUTO_INCREMENT PRIMARY KEY,
     ConcertStatus ENUM('Scheduled', 'Completed', 'Canceled') NOT NULL,
