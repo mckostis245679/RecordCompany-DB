@@ -1,30 +1,17 @@
 CREATE TABLE concert (
     ConcertID int(11) AUTO_INCREMENT PRIMARY KEY,
-    ConcertStatus ENUM('Scheduled', 'Completed', 'Canceled') NOT NULL,   
-    ConcertDate date,
+    ConcertStatus ENUM('Scheduled', 'Completed', 'Canceled') NOT NULL,
+    ConcertDate date not null ,
     required_capacity int not null,
     ArtistID int(11) not null,
     VenueID int(11) not null,
 
     CONSTRAINT HASARTIST FOREIGN KEY (ArtistID) REFERENCES artist(ArtistID)
     ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT HASVENUE FOREIGN KEY (VenueID) REFERENCES venue(VenueID) 
+    CONSTRAINT HASVENUE FOREIGN KEY (VenueID) REFERENCES venue(VenueID)
     ON UPDATE CASCADE ON DELETE CASCADE
-) engine=InnoDB;
-
-create table venue (
-    VenueID int(11) AUTO_INCREMENT PRIMARY KEY,
-    VenueName varchar(100) not null,
-    Venue_Location varchar(200) not null,
-    Opening_Date date not null,
-    Capacity int not null,
-    NumofConcerts int default 0,
-    OperationYears int default 0,
-
-    rating decimal(4,2) generated always as (
-        (Capacity / 1000) + (NumofConcerts / 100) * 3 + (OperationYears * 2)
-    ) virtual
 );
+
 
 create table ConcertHistory (
     history_id int primary key AUTO_INCREMENT,
@@ -45,16 +32,16 @@ CREATE TABLE DBA (
 );
 
 CREATE TABLE log (
-    log_id INT AUTO_INCREMENT NOT NULL,
+    log_id INT AUTO_INCREMENT NOT NULL primary key,
     table_name VARCHAR(50) NOT NULL,
     action_type ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
     action_time DATETIME NOT NULL, 
-    username VARCHAR(100) NOT NULL
-     PRIMARY KEY(log_id),
-     CONSTRAINT HASUSER FOREIGN KEY (username) REFERENCES DBA(username) 
+    username VARCHAR(100) NOT NULL,
+    CONSTRAINT HAS_USER FOREIGN KEY (username) REFERENCES DBA(username)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+/*
  Για τους Διαχειριστές Βάσης Δεδομένων (DBA) τηρείται
 η ημερομηνία που ανέλαβαν το ρόλο (start_date), η οποία δεν μπορεί να
 είναι null. Επίσης υπάρχει end_date ημερομηνία για όσους DBA έχουν φύγει
@@ -70,3 +57,4 @@ username του DBA που την εκτέλεσε.
 
 
 USER()
+ */
