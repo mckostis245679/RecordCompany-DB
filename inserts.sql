@@ -1,138 +1,148 @@
-artst 10,recordcompany 5,genre 5,producer 6,producercoany 8,artistcompany 11,band 3,person 7,bandmember 4, album 10,  track 25, albumrelease 12
+INSERT INTO genre (GenreName) VALUES 
+('Pop Rock'),
+('Hip Hop'),
+('R&B'),
+('Alternative Rock'),
+('Electronic Pop');
+
+INSERT INTO recordcompany (CompanyName, Address, Phone, Email, BeginDate) VALUES
+('Universal Music Group', '2220 Colorado Avenue, Santa Monica, CA', '818-877-2222', 'contact@universalmusic.com', '1934-01-01'),
+('Sony Music Entertainment', '25 Madison Avenue, New York, NY', '212-833-8000', 'contact@sonymusic.com', '1929-01-01'),
+('Warner Music Group', '1633 Broadway, New York, NY', '212-275-2000', 'contact@wmg.com', '1958-03-19'),
+('Columbia Records', '550 Madison Avenue, New York, NY', '212-833-8000', 'contact@columbiarecords.com', '1889-01-01'),
+('Republic Records', '1755 Broadway, New York, NY', '212-373-0800', 'contact@republicrecords.com', '1995-01-01');
+
+
+INSERT INTO producer (FirstName, LastName, NumOfProdAlbums) VALUES
+('Max', 'Martin', 50),
+('Rick', 'Rubin', 45),
+('Quincy', 'Jones', 40),
+('Finneas', 'OConnell', 15),
+('Jack', 'Antonoff', 25),
+('Mark', 'Ronson', 20);
 
 INSERT INTO artist (ArtistType) VALUES
-('PERSON'),
-('BAND'),
-('ORCHESTRA'),
-('CHOIR'),
-('VIRTUAL'),
-('OTHER'),
-('PERSON'),
-('BAND'),
-('CHOIR'),
-('VIRTUAL');
-
-INSERT INTO recordcompany (CompanyName, Address, Phone, Email, StartDate, EndDate) VALUES
-('Columbia Records', '30 Rockefeller Plaza, New York, NY 10112',  '7184455667', 'columbia@columbiarecords.com', '1888-10-01', NULL),
-('Capitol Records', '1750 N Vine St, Los Angeles, CA 90028',  '3235567788', 'capitol@capitolrecords.com', '1942-06-15', '2018-01-01'),
-('Motown Records', '2648 W Grand Blvd, Detroit, MI 48208',  '3136678899', 'motown@motownrecords.com', '1959-01-12', NULL),
-('Atlantic Records', '1290 Avenue of the Americas, New York, NY 10104',  '2233445566', 'atlantic@atlanticrecords.com', '1947-10-01', NULL),
-('Def Jam Recordings', '1755 Broadway, New York, NY 10019',  '3344556677', 'info@defjam.com', '1984-11-01', NULL);
-
-INSERT INTO genre (GenreName) VALUES
-('Rock'),
-('Pop'),
-('Jazz'),
-('Classical'),
-('Hip-Hop');
-
-INSERT INTO producer (FirstName, LastName, NumofProdAlbums) VALUES
-('Quincy', 'Jones', 50),
-('Max', 'Martin', 23),
-('Rick', 'Rubin', 30),
-('Timbaland', 'Mosley', 45),
-('Dr.', 'Dre', 28),
-('George', 'Martin', 40);
-
-INSERT INTO producercompany (ProducerID, RecordCompanyID, FromDate, ToDate) VALUES
-(1, 2, '2000-01-01', '2005-12-31'),
-(2, 3, '2005-01-01', NULL),
-(3, 1, '2010-05-15', '2015-08-30'),
-(4, 4, '2012-02-01', '2018-10-01'),
-(5, 5, '2015-03-01', NULL),
-(6, 4, '1990-06-20', '2000-12-31'),
-(3, 2, '2008-07-01', '2013-11-15'),
-(1, 4, '2017-04-01', NULL),
-(6, 2, '2000-01-01', '2025-12-31');
+('PERSON'),     -- Taylor Swift
+('PERSON'),     -- Ed Sheeran
+('BAND'),       -- Coldplay
+('BAND'),       -- Imagine Dragons
+('ORCHESTRA'),  -- London Symphony Orchestra
+('CHOIR'),      -- London Symphony Chorus
+('PERSON'),     -- Adele
+('BAND'),       -- The Weeknd
+('VIRTUAL'),    -- Gorillaz
+('PERSON');     -- Billie Eilish
 
 
-INSERT INTO artistcompany (ArtistID, CompanyID, FromDate, ToDate) VALUES
-(1, 2, '2000-01-01', '2005-12-31'),
-(2, 3, '2005-01-01', NULL),
-(3, 1, '2010-05-15', '2015-08-30'),
-(4, 4, '2012-02-01', '2018-10-01'),
-(5, 5, '2015-03-01', NULL),
-(6, 2, '1990-06-20', '2000-12-31'),
-(7, 2, '2008-07-01', '2013-11-15'),
-(8, 4, '2017-04-01', NULL),
-(9, 1, '2003-06-15', '2009-09-30'),
-(10, 3, '2007-11-01', NULL),
-(1, 1, '1995-01-01', '2005-12-31');
-
-INSERT INTO band (BandName, FormationDate, DisbandDate, ArtistID) VALUES
-('The Beatles', '1960-08-01', '1970-04-10', 1),
-('Queen', '1970-03-01', NULL, 2),
-('The Rolling Stones', '1962-07-12', NULL, 3);
-
-INSERT INTO person (FirstName, LastName, Birthdate, Country, Alias, isSoloArtist, ArtistID) VALUES
-('John', 'Lennon', '1940-10-09', 'United Kingdom', 'Lennon', 1, 1),
-('Paul', 'McCartney', '1942-06-18', 'United Kingdom', 'McCartney', 1, 1),
-('George', 'Harrison', '1943-02-25', 'United Kingdom', 'Harrison', 1, 1),
-('Ringo', 'Starr', '1940-07-07', 'United Kingdom', 'Starr', 1, 1),
-('Freddie', 'Mercury', '1946-09-05', 'United Kingdom', 'Mercury', 1, 2),
-('Brian', 'May', '1947-07-19', 'United Kingdom', 'May', 1, 2),
-('Mick', 'Jagger', '1943-07-26', 'United Kingdom', 'Jagger', 0, 3);
+INSERT INTO person (FirstName, LastName, Birthdate, Country, ArtistID) VALUES
+('Taylor', 'Swift', '1989-12-13', 'USA', 1),
+('Ed', 'Sheeran', '1991-02-17', 'UK', 2),
+('Chris', 'Martin', '1977-03-02', 'UK', NULL),
+('Dan', 'Reynolds', '1987-07-14', 'USA', NULL),
+('Adele', 'Adkins', '1988-05-05', 'UK', 7),
+('Abel', 'Tesfaye', '1990-02-16', 'Canada', 8),
+('Billie', 'Eilish', '2001-12-18', 'USA', 10);
 
 
-INSERT INTO bandmember (BandID, Person_id, FromDate, ToDate) VALUES
-(1, 1, '1960-08-01', '1970-04-10'),
-(1, 2, '1960-08-01', '1970-04-10'),
-(2, 5, '1970-03-01', NULL),
-(3, 7, '1962-07-12', NULL);
-
-INSERT INTO album (AlbumID,ArtistID, GenreID, CompanyID, ProducerID, Title) VALUES
-(1,1, 1, 1, 1, 'Thriller'),
-(2,2, 2, 2, 2, 'Back to Black'),
-(3,3, 3, 3, 3, 'Rumors'),
-(4,4, 3, 4, 4, 'Nevermind'),
-(5,5, 5, 5, 5, 'Abbey Road'),
-(6,6, 1, 1, 6, 'The Dark Side of the Moon'),
-(7,7, 2, 2, 1, 'The Miseducation of Lauryn Hill'),
-(8,8, 3, 3, 2, 'A Night at the Opera'),
-(9,9, 4, 4, 3, 'Abbey Road'),
-(10,10, 5, 5, 4, 'Born to Run');
-
-INSERT INTO track (AlbumID, TrackLength, TrackNo, Lyrics, Title) VALUES
-(1, '00:04:54', 2, 'For forty days and for forty nights, law was on her side', 'Beat It'),
-(1, '00:04:35', 4, 'And shes laying away', 'PYT (Pretty Young Thing)'),
-(1, '00:05:19', 5, 'Show you the world', 'The Girl Is Mine'),
-(2, '00:04:02', 1, 'He left no time to regret', 'Rehab'),
-(2, '00:03:05', 2, 'We only said goodbye with words', 'Back to Black'),
-(3, '00:04:19', 1, 'You know that I love you', 'Go Your Own Way'),
-(3, '00:02:33', 4, 'Tell me lies, tell me sweet little lies', 'Little Lies'),
-(3, '00:03:33', 5, 'Say you love me', 'Everywhere'),
-(4, '00:03:38', 1, 'Load up on guns, bring your friends', 'Smells Like Teen Spirit'),
-(4, '00:03:18', 5, 'Just because you re paranoid', 'Breed'),
-(5, '00:02:45', 4, 'You never give me your money', 'You Never Give Me Your Money'),
-(5, '00:04:00', 5, 'Golden slumbers fill your eyes', 'Golden Slumbers'),
-(6, '00:03:43', 1, 'Breathe, breathe in the air', 'Breathe'),
-(6, '00:03:34', 2, 'Dont be afraid to care', 'Time'),
-(6, '00:06:53', 3, 'All that s necessary', 'Money'),
-(6, '00:03:29', 4, 'Run, rabbit, run', 'Us and Them'),
-(6, '00:06:31', 5, 'For long you live and high you fly', 'Brain Damage'),
-(7, '00:03:23', 1, 'Strumming my pain with his fingers', 'Killing Me Softly with His Song'),
-(7, '00:04:29', 2, 'Singing my life with his words', 'The Miseducation of Lauryn Hill'),
-(8, '00:04:55', 1, 'Can you find me somebody to love?', 'Somebody to Love'),
-(8, '00:03:04', 2, 'Oh, baby, cant do this to me, baby!', 'Crazy Little Thing Called Love'),
-(8, '00:03:12', 3, 'I sometimes wish I d never been born at all', 'Bohemian Rhapsody'),
-(9, '00:03:40', 1, 'Hey, hey, hey, hey', 'Seven Days'),
-(9, '00:03:29', 2, 'Now I believe in yesterday', 'Sundays'),
-(10, '00:03:28', 1, 'Once upon a time not so long ago', 'Born to Run');
+INSERT INTO band (BandName, FormationDate, ArtistID) VALUES
+('Coldplay', '1996-09-01', 3),
+('Imagine Dragons', '2008-01-01', 4),
+('Gorillaz', '1998-01-01', 9);
 
 
+INSERT INTO bandmember (BandID, PersonID, FromDate) VALUES
+(1, 3, '1996-09-01'),    -- Chris Martin in Coldplay
+(2, 4, '2008-01-01'),    -- Dan Reynolds in Imagine Dragons
+(1, 5, '1996-09-01'),    -- Jonny Buckland in Coldplay
+(2, 6, '2008-01-01');    -- Wayne Sermon in Imagine Dragons
 
+
+INSERT INTO artistcompany (ArtistID, CompanyID, FromDate) VALUES
+(1, 1, '2006-01-01'),  -- Taylor Swift - Universal
+(2, 2, '2011-01-01'),  -- Ed Sheeran - Sony
+(3, 3, '2000-01-01'),  -- Coldplay - Warner
+(4, 4, '2012-01-01'),  -- Imagine Dragons - Columbia
+(5, 1, '1990-01-01'),  -- LSO - Universal
+(6, 1, '1990-01-01'),  -- LSC - Universal
+(7, 2, '2008-01-01'),  -- Adele - Sony
+(8, 5, '2012-01-01'),  -- The Weeknd - Republic
+(9, 3, '2001-01-01'),  -- Gorillaz - Warner
+(10, 5, '2016-01-01'), -- Billie Eilish - Republic
+(1, 5, '2018-01-01');  -- Taylor Swift - Republic (second contract)
+
+
+INSERT INTO producercompany (ProducerID, RecordCompanyID, FromDate) VALUES
+(1, 1, '2000-01-01'),  -- Max Martin - Universal
+(2, 2, '1990-01-01'),  -- Rick Rubin - Sony
+(3, 3, '1980-01-01'),  -- Quincy Jones - Warner
+(4, 5, '2016-01-01'),  -- Finneas - Republic
+(5, 2, '2010-01-01'),  -- Jack Antonoff - Sony
+(6, 1, '2005-01-01'),  -- Mark Ronson - Universal
+(1, 5, '2015-01-01'),  -- Max Martin - Republic
+(2, 3, '2000-01-01');  -- Rick Rubin - Warner
+
+-- Album (minimum 10)
+INSERT INTO album (Title, ArtistID, GenreID, CompanyID, ProducerID) VALUES
+('1989', 1, 1, 1, 1),                    -- Taylor Swift
+('÷ (Divide)', 2, 1, 2, 2),              -- Ed Sheeran
+('Music of the Spheres', 3, 4, 3, 3),    -- Coldplay
+('Mercury - Act 1', 4, 4, 4, 2),         -- Imagine Dragons
+('Classical Collection', 5, 4, 1, 3),     -- LSO
+('Choral Classics', 6, 4, 1, 3),         -- LSC
+('30', 7, 3, 2, 5),                      -- Adele
+('After Hours', 8, 3, 5, 1),             -- The Weeknd
+('Demon Days', 9, 5, 3, 6),              -- Gorillaz
+('Happier Than Ever', 10, 1, 5, 4);      -- Billie Eilish
+
+-- Track (minimum 25)
+INSERT INTO track (Title, AlbumID, TrackLength, TrackNo) VALUES
+-- 1989 tracks
+('Shake It Off', 1, '00:03:39', 1),
+('Blank Space', 1, '00:03:51', 2),
+('Style', 1, '00:03:51', 3),
+-- ÷ (Divide) tracks
+('Shape of You', 2, '00:03:53', 1),
+('Castle on the Hill', 2, '00:04:21', 2),
+-- Music of the Spheres tracks
+('Higher Power', 3, '00:03:26', 1),
+('My Universe', 3, '00:03:46', 2),
+('Coloratura', 3, '00:10:18', 3),
+-- Mercury - Act 1 tracks
+('Enemy', 4, '00:02:53', 1),
+('Wrecked', 4, '00:03:54', 2),
+-- Classical Collection tracks
+('Symphony No. 5', 5, '00:07:15', 1),
+('Piano Concerto No. 21', 5, '00:05:50', 2),
+('Violin Concerto in D', 5, '00:06:30', 3),
+-- Choral Classics tracks
+('Hallelujah', 6, '00:04:30', 1),
+('Ave Maria', 6, '00:05:20', 2),
+-- 30 tracks
+('Easy On Me', 7, '00:03:44', 1),
+('Oh My God', 7, '00:03:45', 2),
+('I Drink Wine', 7, '00:06:16', 3),
+-- After Hours tracks
+('Blinding Lights', 8, '00:03:20', 1),
+('Save Your Tears', 8, '00:03:35', 2),
+-- Demon Days tracks
+('Feel Good Inc', 9, '00:03:41', 1),
+('DARE', 9, '00:04:04', 2),
+-- Happier Than Ever tracks
+('Therefore I Am', 10, '00:02:54', 1),
+('Your Power', 10, '00:04:05', 2),
+('Happier Than Ever', 10, '00:04:58', 3);
+
+-- AlbumRelease (minimum 12)
 INSERT INTO albumrelease (AlbumID, ReleaseDate, ReleaseType, ReleaseStatus, Packaging) VALUES
-(1, '1965-08-06', 'LP', 'OFFICIAL', 'BOOK'),
-(1, '1965-08-06', 'CD', 'PROMOTION', 'CARDBOARD SLEEVE'),
-(2, '1975-11-21', 'LP', 'BOOTLEG', 'DIGIPAK'),
-(2, '1975-11-21', 'CD', 'OFFICIAL', 'JEWEL CASE'),
-(3, '1971-04-23', 'MP3', 'CANCELED', 'NA'),
-(3, '1971-04-23', 'LP', 'OFFICIAL', 'CARDBOARD SLEEVE'),
-(4, '1979-07-27', 'CD', 'PROMOTION', 'DIGIPAK'),
-(4, '1979-07-27', 'LP', 'OFFICIAL', 'JEWEL CASE'),
-(5, '1969-09-26', 'LP', 'WITHDRAWN', 'NA'),
-(5, '1969-09-26', 'CD', 'OFFICIAL', 'BOOK'),
-(6, '1967-05-26', 'LP', 'OFFICIAL', 'JEWEL CASE'),
-(6, '1967-05-26', 'CD', 'PROMOTION', 'CARDBOARD SLEEVE');
-
-
+(1, '2014-10-27', 'CD', 'OFFICIAL', 'JEWEL CASE'),      -- 1989 CD
+(1, '2014-10-27', 'LP', 'OFFICIAL', 'CARDBOARD SLEEVE'), -- 1989 Vinyl
+(2, '2017-03-03', 'CD', 'OFFICIAL', 'DIGIPAK'),         -- ÷ (Divide)
+(3, '2021-10-15', 'CD', 'OFFICIAL', 'DIGIPAK'),         -- Music of the Spheres
+(4, '2021-09-03', 'CD', 'OFFICIAL', 'JEWEL CASE'),      -- Mercury - Act 1
+(5, '2020-01-15', 'CD', 'OFFICIAL', 'BOOK'),            -- Classical Collection
+(6, '2020-02-20', 'CD', 'OFFICIAL', 'BOOK'),            -- Choral Classics
+(7, '2021-11-19', 'CD', 'OFFICIAL', 'DIGIPAK'),         -- 30
+(8, '2020-03-20', 'CD', 'OFFICIAL', 'JEWEL CASE'),      -- After Hours
+(9, '2005-05-11', 'CD', 'OFFICIAL', 'JEWEL CASE'),      -- Demon Days
+(10, '2021-07-30', 'CD', 'OFFICIAL', 'DIGIPAK'),        -- Happier Than Ever
+(10, '2021-07-30', 'LP', 'OFFICIAL', 'CARDBOARD SLEEVE'); -- Happier Than Ever Vinyl

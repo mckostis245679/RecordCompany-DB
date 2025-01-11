@@ -8,7 +8,7 @@ create table venue
     Capacity       int           not null,
     NumofConcerts  int default 0 null,
     OperationYears int default 0 null,
-    rating         decimal(4, 2) as ((((`Capacity` / 1000) + ((`NumofConcerts` / 100) * 3)) + (`OperationYears` * 2)))
+    rating         decimal(8, 2) default null
 );
 
 CREATE TABLE concert (

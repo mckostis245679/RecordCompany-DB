@@ -2,11 +2,11 @@
 
 delimiter $$
 
-create procedure CalcVenueScore (IN venueID_in int, OUT score int)
+create procedure CalcVenueScore (IN venueID_in int)
 begin
-  select (Capacity / 1000) + (NumofConcerts / 100) * 3 + (OperationYears * 2) into score
-  from venue 
-  where VenueID = venueID_in;
+  declare score DECIMAL(8,2);
+  select (Capacity / 1000) + (NumofConcerts / 100) * 3 + (OperationYears * 2) into score from venue where VenueID = venueID_in;
+  update venue set rating = score where VenueID = venueID_in;
 end $$
 
 delimiter ;
@@ -117,3 +117,21 @@ begin
 end $$
 
 delimiter ;
+
+
+-- fixes auto_increment to have διαδοχικα person_id
+delimiter $$
+create procedure fix_person_id()
+begin
+  declare last_id;
+
+  select count(*) into last_id from person;
+
+  set @sql = concat('ALTER TABLE person AUTO_INCREMENT = ', last_id + 1);
+  prepare stmt from @sql;
+  execute stmt;
+  deallocate prepare stmt;
+end $$
+
+delimiter ;
+
