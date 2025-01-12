@@ -18,48 +18,71 @@ delimiter $$
 
 create procedure manage_concert (IN artist_ID_in INT, IN concert_date_in DATE, IN action_type_in CHAR(1))
 begin
-  declare scheduled_cnt int;
-  declare msg_out varchar(100);
+     DECLARE msg_out VARCHAR(100);
+    DECLARE concert_status varchar(20);
 
--- check scheduled concerts
-  select count(*) into scheduled_cnt from concert
-  where ArtistID = artist_ID_in and ConcertStatus = 'Scheduled';
-
-  case action_type_in
-    when 'i' then
-      if scheduled_cnt >= 3 then
-        SIGNAL SQLSTATE '45000'
-        set MESSAGE_TEXT = 'Artist has already 3 scheduled concerts';
-      elseif datediff(concert_date_in, curdate()) < 5 then
-        SIGNAL SQLSTATE '45000'
-        set MESSAGE_TEXT = 'Concert must be scheduled at least 5 days in advance';
-      else
-        insert into concert (ArtistID, ConcertDate) values (artist_ID_in, concert_date_in);
-        set msg_out = 'Concert scheduled.';
-      end if;
-
-    when 'c' then
-      if datediff(concert_date_in, curdate()) < 3 then
-        SIGNAL SQLSTATE '45000'
-        set MESSAGE_TEXT = 'Cannot cancel concert 3 days before';
-      else 
-        update concert set ConcertStatus = 'Cancelled'
-        where ArtistID = artist_ID_in AND ConcertDate = concert_date_in AND ConcertStatus = 'Scheduled';
-        set msg_out = 'Concert cancelled.';
-      end if;
+    declare new_concert_id int;
     
-    when 'a' then
-      if scheduled_cnt >= 3 then
-        SIGNAL SQLSTATE '45000'
-        set MESSAGE_TEXT = 'Artist has already 3 scheduled concerts';
-      else 
-        update concert set ConcertStatus = 'Scheduled'
-        where ArtistID = artist_ID_in AND ConcertDate = concert_date_in AND ConcertStatus = 'Cancelled';
-        set msg_out = 'Concert reactivated.';
-      end if;
-   end case;
+    SELECT ConcertStatus into concert_status from concert where ArtistID = artist_ID_in AND  ConcertDate = concert_date_in limit 1;
 
-   select msg_out as message;
+    CASE action_type_in
+        -- Schedule a new concert
+        WHEN 'i' THEN
+            if concert_status = 'Scheduled' then
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'A concert is already scheduled for this artist on the given date.';
+            ELSEIF concert_status = 'Cancelled' then
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'A concert was cancelled for this artist on the given date.';
+            ELSE
+                -- INSERT A CONCERT WITHOUT A VENUE (it has to exist so we can call FindVenue)
+                insert into concert (ConcertStatus, ConcertDate, required_capacity, ArtistID) values
+                                    ('Scheduled', concert_date_in, 0, artist_ID_in);
+
+                -- Assign venue to concert !!! IT ASSIGNS VENUE WITH HARD-CODED REQUIRED CAPACITY) !!!
+                select count(*) from concert into new_concert_id;
+                
+                call FindVenue(new_concert_id, 1000, @sel_venueid, @sel_capacity);
+                update concert set VenueID = @sel_venueid, required_capacity = @sel_capacity where ConcertID = new_concert_id;
+                
+                set msg_out = 'Concert scheduled successfully. Assigning venue...';
+            END IF;
+
+        -- Cancel an existing concert
+        WHEN 'c' THEN
+            IF concert_status = 'Scheduled' THEN
+                UPDATE concert SET ConcertStatus = 'Canceled'
+                WHERE ArtistID = artist_ID_in AND ConcertDate = concert_date_in;
+                set msg_out = 'Concert successfully cancelled.';
+            ELSEIF concert_status is null then
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'No concert exists for given artist and date.';
+            ELSE
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'The concert is already cancelled.';
+            END IF;
+
+        -- Reactivate a canceled concert
+        WHEN 'a' THEN
+            IF concert_status = 'Canceled' THEN
+                UPDATE concert SET ConcertStatus = 'Scheduled'
+                WHERE ArtistID = artist_ID_in AND ConcertDate = concert_date_in;
+                SET msg_out = 'Concert successfully reactivated.';
+            ELSEIF concert_status IS NULL THEN
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'No cancelled concert exists for this artist on the given date.';
+            ELSE
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'The concert is already scheduled.';
+            END IF;
+
+        -- Invalid action type
+        ELSE
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Invalid action type. Use "i", "c", or "a".';
+    END CASE;
+
+    SELECT msg_out AS message;
 
 end $$
 
@@ -71,17 +94,22 @@ delimiter $$
 create procedure FindVenue (IN concert_id_in INT, IN req_capacity_in INT, OUT selected_venue_id INT, OUT selected_capacity INT)
 begin
   declare concert_status varchar(20);
+  declare assigned_venue_id int;
 
-  select ConcertStatus into concert_status from concert
-  where ConcertID = concert_id_in;
-
-  if concert_status = 'Cancelled' OR concert_status is null then
-    set selected_venue_id = NULL;
-    set selected_capacity = 0;
+  select ConcertStatus, VenueID into concert_status, assigned_venue_id from concert
+  where ConcertID = concert_id_in LIMIT 1;
+  
+  if concert_status is null then
+      set selected_capacity = 0;
+      set selected_venue_id = null;
+  elseif assigned_venue_id is not null then
+      -- Return the already assigned venue from the concert
+      select VenueID, Capacity into selected_venue_id, selected_capacity from venue where VenueID = assigned_venue_id;
   else
-    select venueID, Capacity into selected_venue_id, selected_capacity from venue
-    where Capacity >= (1.1 * req_capacity_in) AND VenueID NOT IN (select venueID from concert where ConcertStatus = 'Scheduled')
-    order by rating DESC limit 1;
+      select VenueID, Capacity into selected_venue_id, selected_capacity from venue
+      where Capacity >= (1.1 * req_capacity_in)
+        AND not exists (select 1 from concert where concert.VenueID = venue.VenueID AND ConcertStatus = 'Scheduled')
+        ORDER BY rating DESC LIMIT 1;
   end if;
 end $$
 
@@ -134,4 +162,3 @@ begin
 end $$
 
 delimiter ;
-

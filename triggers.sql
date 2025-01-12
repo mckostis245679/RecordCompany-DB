@@ -207,5 +207,33 @@ begin
 end $$   
 delimiter ;
 
+-- Move completed or non-rescheduled concerts into concerthistory.
+delimiter $$
+create trigger concert_to_ConcertHistory
+    before update on concert
+    for each row
+    begin
+        if NEW.ConcertStatus = 'Completed' then
+            insert into ConcertHistory (concert_id, artist_name, venue_name, ticket_count, concert_date) SELECT
+                OLD.ConcertID,
+                (SELECT CONCAT(p.FirstName, ' ', p.LastName) from person p where p.ArtistID = OLD.ArtistID LIMIT 1),
+                (SELECT v.VenueName from venue v where VenueID = OLD.VenueID LIMIT 1),
+                OLD.required_capacity,
+                OLD.ConcertDate;
+            DELETE from concert where ConcertID = OLD.ConcertID;
+
+        elseif NEW.ConcertStatus = 'Canceled' AND DATEDIFF(OLD.ConcertDate, CURDATE()) <= 3 then
+            insert into ConcertHistory (concert_id, artist_name, venue_name, ticket_count, concert_date) SELECT
+                OLD.ConcertID,
+                (SELECT CONCAT(p.FirstName, ' ', p.LastName) from person p where p.ArtistID = OLD.ArtistID LIMIT 1),
+                (SELECT v.VenueName from venue v where VenueID = OLD.VenueID LIMIT 1),
+                OLD.required_capacity,
+                NULL;
+            delete from concert where ConcertID = OLD.ConcertID;
+        end if ;
+    end $$
+delimiter ;
+
+
 
 
