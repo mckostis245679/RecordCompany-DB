@@ -146,3 +146,20 @@ INSERT INTO albumrelease (AlbumID, ReleaseDate, ReleaseType, ReleaseStatus, Pack
 (9, '2005-05-11', 'CD', 'OFFICIAL', 'JEWEL CASE'),      -- Demon Days
 (10, '2021-07-30', 'CD', 'OFFICIAL', 'DIGIPAK'),        -- Happier Than Ever
 (10, '2021-07-30', 'LP', 'OFFICIAL', 'CARDBOARD SLEEVE'); -- Happier Than Ever Vinyl
+
+-- Venue
+insert into venue (VenueID, VenueName, Venue_Location, Opening_Date, Capacity, NumofConcerts, OperationYears, rating) values
+(1, 'Madison Square Garden', 'New York, USA', '1990-01-01', 20000, 300, 35, 99.00),
+(2, 'O2 Arena', 'London, UK', '1995-01-01', 20000, 400, 30, 92.00),
+(3, 'Sydney Opera House', 'Sydney, Australia', '1973-10-20', 5733, 150, 51, 112.23),
+(4, 'Royal Albert Hall', 'London, UK', '1871-03-29', 5272, 500, 154, 328.27),
+(5, 'Hollywood Bowl', 'Los Angeles, USA', '1922-07-11', 17500, 350, 103, 234.00),
+(6, 'Wembley Stadium', 'London, UK', '1923-04-28', 90000, 200, 102, 300.00),
+(7, 'Staples Center', 'Los Angeles, USA', '1999-10-17', 20000, 300, 25, 79.00),
+(8, 'Tokyo Dome', 'Tokyo, Japan', '1988-03-17', 55000, 400, 37, 141.00),
+(9, 'Mercedes-Benz Arena', 'Berlin, Germany', '2008-09-12', 17000, 150, 16, 53.50),
+(10, 'Scotiabank Arena', 'Toronto, Canada', '1999-02-19', 19000, 250, 26, 78.50);
+
+-- DBA
+insert into DBA (username, start_date, end_date) values
+(USER(), CURDATE(), NULL);

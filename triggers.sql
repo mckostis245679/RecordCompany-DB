@@ -192,7 +192,7 @@ begin
     if OLD.ConcertStatus = 'Scheduled' AND NEW.ConcertStatus = 'Canceled' AND
         DATEDIFF(OLD.ConcertDate, curdate()) < 3 then
          SIGNAL SQLSTATE '45000'
-         SET MESSAGE_TEXT = 'Concert CANNOT be canceled less than 3 days before';
+         SET MESSAGE_TEXT = 'Concert CANNOT be canceled less than 3 days before the scheduled date! ';
     end if;
 
     if OLD.ConcertStatus = 'Canceled' AND NEW.ConcertStatus = 'Scheduled' then
@@ -214,22 +214,18 @@ create trigger concert_to_ConcertHistory
     for each row
     begin
         if NEW.ConcertStatus = 'Completed' then
-            insert into ConcertHistory (concert_id, artist_name, venue_name, ticket_count, concert_date) SELECT
-                OLD.ConcertID,
+            insert into ConcertHistory (artist_name, venue_name, ticket_count, concert_date) SELECT
                 (SELECT CONCAT(p.FirstName, ' ', p.LastName) from person p where p.ArtistID = OLD.ArtistID LIMIT 1),
                 (SELECT v.VenueName from venue v where VenueID = OLD.VenueID LIMIT 1),
                 OLD.required_capacity,
                 OLD.ConcertDate;
-            DELETE from concert where ConcertID = OLD.ConcertID;
 
-        elseif NEW.ConcertStatus = 'Canceled' AND DATEDIFF(OLD.ConcertDate, CURDATE()) <= 3 then
-            insert into ConcertHistory (concert_id, artist_name, venue_name, ticket_count, concert_date) SELECT
-                OLD.ConcertID,
+        elseif NEW.ConcertStatus = 'Canceled' AND DATEDIFF(OLD.ConcertDate, CURDATE()) <= 5 then
+            insert into ConcertHistory (artist_name, venue_name, ticket_count, concert_date) SELECT
                 (SELECT CONCAT(p.FirstName, ' ', p.LastName) from person p where p.ArtistID = OLD.ArtistID LIMIT 1),
                 (SELECT v.VenueName from venue v where VenueID = OLD.VenueID LIMIT 1),
                 OLD.required_capacity,
                 NULL;
-            delete from concert where ConcertID = OLD.ConcertID;
         end if ;
     end $$
 delimiter ;

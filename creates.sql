@@ -27,12 +27,12 @@ CREATE TABLE concert (
 
 
 create table ConcertHistory (
-    history_id int primary key AUTO_INCREMENT,
-    concert_id int not null,
+    concert_id int not null AUTO_INCREMENT,
     artist_name varchar(50) not null,
     venue_name varchar(100) not null,
     ticket_count int,
-    concert_date date
+    concert_date date,
+    primary key (concert_id)
 );
 
 
@@ -53,21 +53,3 @@ CREATE TABLE log (
     CONSTRAINT HAS_USER FOREIGN KEY (username) REFERENCES DBA(username)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
-/*
- Για τους Διαχειριστές Βάσης Δεδομένων (DBA) τηρείται
-η ημερομηνία που ανέλαβαν το ρόλο (start_date), η οποία δεν μπορεί να
-είναι null. Επίσης υπάρχει end_date ημερομηνία για όσους DBA έχουν φύγει
-από τη θέση. Μπορεί να υπάρχουν περισσότεροι από ένας Διαχειριστές
-Βάσης Δεδομένων την ίδια χρονική περίοδο. Οι ενέργειες των Διαχειριστών
-Βάσης Δεδομένων καταγράφοντα σε έναν πίνακα log όπως περιγράφεται
-στο Ερώτημα 3.1.4.1.
-
-Trigger που θα ενημερώνουν το σχετικό πίνακα καταγραφής ενεργειών
-(log) για κάθε ενέργεια εισαγωγής, ενημέρωσης ή διαγραφής στους πίνακες
-person, band, album, concert, venue με την ημερομηνία και ώρα και το
-username του DBA που την εκτέλεσε.
-
-
-USER()
- */
