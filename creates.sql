@@ -35,8 +35,6 @@ create table ConcertHistory (
     primary key (concert_id)
 );
 
-
-
 CREATE TABLE DBA (
     username varchar(100) not null unique,
     start_date date not null,

@@ -168,7 +168,7 @@ before insert on concert
 for each row
 begin
     declare cnt int;
-    if DATEDIFF(NEW.ConcertDate, curdate()) < 5 then
+    if DATEDIFF(curdate(), NEW.ConcertDate) < 5 then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Concert must be scheduled at least 5 days before';
     end if;
@@ -190,7 +190,7 @@ for each row
 begin
     declare cnt int;
     if OLD.ConcertStatus = 'Scheduled' AND NEW.ConcertStatus = 'Canceled' AND
-        DATEDIFF(OLD.ConcertDate, curdate()) < 3 then
+        DATEDIFF(curdate(), OLD.ConcertDate) < 3 then
          SIGNAL SQLSTATE '45000'
          SET MESSAGE_TEXT = 'Concert CANNOT be canceled less than 3 days before the scheduled date! ';
     end if;
@@ -220,7 +220,7 @@ create trigger concert_to_ConcertHistory
                 OLD.required_capacity,
                 OLD.ConcertDate;
 
-        elseif NEW.ConcertStatus = 'Canceled' AND DATEDIFF(OLD.ConcertDate, CURDATE()) <= 5 then
+        elseif NEW.ConcertStatus = 'Canceled' AND DATEDIFF(CURDATE(), OLD.ConcertDate) <= 5 then
             insert into ConcertHistory (artist_name, venue_name, ticket_count, concert_date) SELECT
                 (SELECT CONCAT(p.FirstName, ' ', p.LastName) from person p where p.ArtistID = OLD.ArtistID LIMIT 1),
                 (SELECT v.VenueName from venue v where VenueID = OLD.VenueID LIMIT 1),
